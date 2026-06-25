@@ -1,52 +1,56 @@
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+// ============================================
+// Click-to-copy email address
+// ============================================
+const emailLink = document.getElementById('emailLink');
+const copyHint = document.getElementById('copyHint');
+
+if (emailLink && copyHint) {
+  emailLink.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    const email = emailLink.href.replace('mailto:', '');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(email).then(() => {
+        showCopied();
+      }).catch(() => {
+        window.location.href = emailLink.href;
+      });
+    } else {
+      window.location.href = emailLink.href;
+    }
+  });
 }
 
-header {
-    background: #4CAF50;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
+function showCopied() {
+  const originalText = copyHint.textContent;
+  copyHint.textContent = 'ก็อปแล้ว!';
+  setTimeout(() => {
+    copyHint.textContent = originalText;
+  }, 1800);
 }
 
-header h1 {
-    margin: 0;
-}
+// ============================================
+// Reveal project cards on scroll
+// ============================================
+const revealTargets = document.querySelectorAll('.work-card');
 
-header p {
-    margin: 5px 0 0;
-}
+if ('IntersectionObserver' in window && revealTargets.length) {
+  revealTargets.forEach((el) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  });
 
-section {
-    padding: 20px;
-    margin: 20px auto;
-    max-width: 800px;
-    background: white;
-    border-radius: 8px;
-}
-h2 {
-  color: #4CAF50;
-}
-.project {
-    margin-bottom: 20px;
-}
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
 
-.project h3 {
-    margin: 0 0 10px;
-    color: #333;
+  revealTargets.forEach((el) => observer.observe(el));
 }
-ul {
-    list-style-type: square; 
-    padding-left: 20px;
-}
-footer {
-    text-align: center;
-    padding: 10px 0;
-    background: #333; 
-    color: white;
-    margin-top: 20px;
